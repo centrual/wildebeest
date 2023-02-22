@@ -1,5 +1,7 @@
 import type { Env } from 'wildebeest/backend/src/types/env'
-import d1 from './d1'
+// import d1 from './d1'
+import neon from './neon'
+// import planetscale from './planetscale'
 
 export interface Result<T = unknown> {
 	results?: T[]
@@ -24,5 +26,5 @@ export interface PreparedStatement {
 }
 
 export function getDatabase(env: Env): Database {
-	return d1(env)
+	return neon(env)
 }

@@ -197,6 +197,16 @@
     undici "5.9.1"
     ws "^8.2.2"
 
+"@neondatabase/serverless@^0.2.5":
+  version "0.2.5"
+  resolved "https://registry.yarnpkg.com/@neondatabase/serverless/-/serverless-0.2.5.tgz#78bd4a905f50d087d06f16c02711fdd05b2a851d"
+  integrity sha512-Qu/nNZftfoqw4ojVCXU/EgYlfII3mzLm82iXNOUljFumPhoZ/Wp8NJG5DgSAKCWC0zwTyJsojdPLQDj/UPs2vg==
+
+"@planetscale/database@^1.5.0":
+  version "1.5.0"
+  resolved "https://registry.yarnpkg.com/@planetscale/database/-/database-1.5.0.tgz#073d9ca9841ad62896a6e31f610e89112e6264ef"
+  integrity sha512-Qwh7Or1W5dB5mZ9EQqDkgvkDKhBBmQe58KIVUy0SGocNtr5fP4JAWtvZ6EdLAV6C6hVpzNlCA2xIg9lKTswm1Q==
+
 "@sentry/core@7.28.1":
   version "7.28.1"
   resolved "https://registry.yarnpkg.com/@sentry/core/-/core-7.28.1.tgz#c712ce17469b18b01606108817be24a99ed2116e"
