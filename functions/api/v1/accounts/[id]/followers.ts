@@ -16,7 +16,7 @@ import { getFollowers, loadActors } from 'wildebeest/backend/src/activitypub/act
 import * as localFollow from 'wildebeest/backend/src/mastodon/follow'
 
 export const onRequest: PagesFunction<Env, any, ContextData> = async ({ params, request, env }) => {
-	return handleRequest(request, getDatabase(env), params.id as string)
+	return handleRequest(request, await getDatabase(env), params.id as string)
 }
 
 export async function handleRequest(request: Request, db: Database, id: string): Promise<Response> {
@@ -68,10 +68,14 @@ async function getLocalFollowers(request: Request, handle: Handle, db: Database)
 
 	for (let i = 0, len = followers.length; i < len; i++) {
 		const id = new URL(followers[i])
-
 		const acct = urlToHandle(id)
-		const actor = await actors.get(id)
-		out.push(await loadExternalMastodonAccount(acct, actor))
+
+		try {
+			const actor = await actors.getAndCache(id, db)
+			out.push(await loadExternalMastodonAccount(acct, actor))
+		} catch (err: any) {
+			console.warn(`failed to retrieve follower (${id}): ${err.message}`)
+		}
 	}
 
 	const headers = {

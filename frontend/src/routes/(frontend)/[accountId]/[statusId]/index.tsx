@@ -1,4 +1,5 @@
 import { component$ } from '@builder.io/qwik'
+import { getDatabase } from 'wildebeest/backend/src/database'
 import { MastodonStatus, StatusContext } from '~/types'
 import Status from '~/components/Status'
 import * as statusAPI from 'wildebeest/functions/api/v1/statuses/[id]'
@@ -11,13 +12,17 @@ import { getDocumentHead } from '~/utils/getDocumentHead'
 import { Person } from 'wildebeest/backend/src/activitypub/actors'
 
 export const statusLoader = loader$<
-	Promise<{ status: MastodonStatus; statusTextContent: string; context: StatusContext }>,
-	{ DATABASE: D1Database }
+	Promise<{ status: MastodonStatus; statusTextContent: string; context: StatusContext }>
 >(async ({ request, html, platform, params }) => {
 	const domain = new URL(request.url).hostname
 	let statusText = ''
 	try {
-		const statusResponse = await statusAPI.handleRequestGet(platform.DATABASE, params.statusId, domain, {} as Person)
+		const statusResponse = await statusAPI.handleRequestGet(
+			await getDatabase(platform),
+			params.statusId,
+			domain,
+			{} as Person
+		)
 		statusText = await statusResponse.text()
 	} catch (e: unknown) {
 		const error = e as { stack: string; cause: string }
@@ -31,7 +36,7 @@ export const statusLoader = loader$<
 	const statusTextContent = await getTextContent(status.content)
 
 	try {
-		const contextResponse = await contextAPI.handleRequest(domain, platform.DATABASE, params.statusId)
+		const contextResponse = await contextAPI.handleRequest(domain, await getDatabase(platform), params.statusId)
 		const contextText = await contextResponse.text()
 		const context = JSON.parse(contextText ?? null) as StatusContext | null
 		if (!context) {

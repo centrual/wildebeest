@@ -85,7 +85,7 @@ describe('Mastodon APIs', () => {
 				headers,
 			})
 			const res = await oauth_authorize.handleRequestPost(req, db, userKEK, accessDomain, accessAud)
-			assert.equal(res.status, 403)
+			assert.equal(res.status, 422)
 		})
 
 		test('authorize redirects with code on success and show first login', async () => {
@@ -172,6 +172,31 @@ describe('Mastodon APIs', () => {
 			assert(isUrlValid(actor.id))
 			// ensure that we generate a correct key pairs for the user
 			assert((await getSigningKey(userKEK, db, actor as Actor)) instanceof CryptoKey)
+		})
+
+		test('first login redirect relative URLs', async () => {
+			const db = await makeDB()
+
+			const params = new URLSearchParams({
+				redirect_uri: '/a',
+			})
+
+			const formData = new FormData()
+			formData.set('username', 'username')
+			formData.set('name', 'name')
+
+			const req = new Request('https://example.com/first-login?' + params, {
+				method: 'POST',
+				body: formData,
+				headers: {
+					cookie: `CF_Authorization=${TEST_JWT}`,
+				},
+			})
+			const res = await first_login.handlePostRequest(req, db, userKEK, accessDomain, accessAud)
+			assert.equal(res.status, 302)
+
+			const location = res.headers.get('location')
+			assert.equal(location, 'https://example.com/a')
 		})
 
 		test('token error on unknown client', async () => {
